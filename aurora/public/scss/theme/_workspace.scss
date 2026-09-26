@@ -39,6 +39,23 @@
 		border-color var(--aurora-dur-3) var(--aurora-ease);
 }
 
+/* Chart and Number Card widgets (chart_widget.js, number_card_widget.js) and the
+   block-settings "..." menu in workspace edit mode all render their popup as a
+   child of this same card rather than nested in the toggle like the
+   .btn.sort-selector-button fix in _controls.scss — so a short card clips its own
+   menu below the fold, and every option past the first becomes invisible and
+   unclickable. Let the card stop clipping for exactly as long as one of those
+   menus is actually open; the hover sheen and corner halo effects never coincide
+   with that state closely enough to matter. Each card is `position: relative`, so
+   it's also its own stacking context — without a raised z-index here too, an
+   unclipped menu that reaches past its own card's edge paints *underneath* the
+   next card in the grid instead of over it. */
+.widget:has(.dropdown-menu.show),
+.widget:has(.dropdown-list:not(.hidden)) {
+	overflow: visible;
+	z-index: 5;
+}
+
 .widget::after {
 	content: "";
 	position: absolute;

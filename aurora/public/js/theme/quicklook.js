@@ -131,10 +131,21 @@ function describe(el) {
 		};
 	}
 
-	// a link *field*: the doctype is on the input, the value is what's typed
+	// a link *field*: the doctype is on the input, the value is what's typed —
+	// except when the field shows a title instead of the id (frappe.boot's
+	// link_title_doctypes). There, `ControlLink` renders the title into the input
+	// and keeps the real docname only on its own instance's `title_value_map`
+	// (link.js `set_link_title`/`get_input_value`); reading `.value` straight off
+	// the DOM would send the *title* to the server as if it were the docname,
+	// which never resolves and made the preview fail silently for every
+	// title-linked doctype (e.g. Project shown as "ABC Project" instead of
+	// "PRJ-0001").
 	const link_input = el.closest('input[data-fieldtype="Link"][data-target]');
 	if (link_input && link_input.value) {
-		return { kind: "doc", doctype: link_input.dataset.target, name: link_input.value };
+		const control = link_input.closest(".frappe-control")?.fieldobj;
+		const name =
+			(control?.get_input_value ? control.get_input_value() : null) || link_input.value;
+		return { kind: "doc", doctype: link_input.dataset.target, name };
 	}
 
 	/* Only where an image is the *subject*, never where it is decoration.

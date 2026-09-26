@@ -25,7 +25,17 @@ function spawn(event) {
 	// the host needs a stacking/clipping context
 	const style = window.getComputedStyle(target);
 	if (style.position === "static") target.style.position = "relative";
-	if (style.overflow === "visible") target.style.overflow = "hidden";
+
+	/* A dropdown menu can be a genuine DOM descendant of its own toggle — frappe's
+	   sort-selector button nests its `<ul class="dropdown-menu">` right inside the
+	   `<button>` (sort_selector.html) rather than as a sibling like a normal
+	   Bootstrap dropdown. Clipping such a toggle for the ripple would clip its menu
+	   along with it, silently making every option unclickable after the first
+	   press. So targets that carry a menu of their own keep whatever overflow they
+	   already have; the ripple just renders past the corner there. */
+	if (style.overflow === "visible" && !target.querySelector(".dropdown-menu")) {
+		target.style.overflow = "hidden";
+	}
 
 	const rect = target.getBoundingClientRect();
 	const size = Math.max(rect.width, rect.height);

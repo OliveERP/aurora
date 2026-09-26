@@ -151,6 +151,24 @@
 }
 
 /* --- filters ------------------------------------------------------------- */
+
+/* Now that the sort-selector's own dropdown-menu is no longer clipped (see the
+   .btn.sort-selector-button override above), it genuinely opens downward over
+   the top of the results area — right into `.list-row-head`, the sticky
+   column-header row a few lines up, which carries its own `z-index: 3` and
+   `backdrop-filter: blur(12px)`. Neither `.filter-section` nor `.sort-selector`
+   is a positioned element, so the menu's own z-index (1000, from bootstrap) is
+   never reliably ranked against that header's self-rooted stacking context —
+   two independently-composited, overlapping blurred layers with no explicit
+   order between them, one of them animating opacity on open, is a textbook
+   recipe for compositor z-fighting: the header's rightmost columns flicker in
+   and out on top of the menu and nothing in it can be clicked. Pin the whole
+   toolbar to its own stacking context, explicitly ranked above the header. */
+.sort-selector {
+	position: relative;
+	z-index: 4;
+}
+
 .filter-section .filter-button,
 .filter-selector .btn,
 .sort-selector .btn,

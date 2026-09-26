@@ -31,6 +31,18 @@
 		border-color var(--aurora-dur-2) var(--aurora-ease);
 }
 
+/* The sort-selector's own toggle button nests its <ul class="dropdown-menu">
+   as a real DOM child (sort_selector.html) instead of as a sibling like every
+   other core dropdown (.menu-more-button, .actions-btn-group, …). The
+   overflow:hidden above — there only to clip the ripple to the rounded corner
+   — clips that nested menu along with it, so its options render outside the
+   button's tiny box and are neither visible nor clickable. `.btn` alone would
+   win by source order but not by specificity, so pair the class with `.btn`
+   to guarantee this wins regardless of stylesheet order. */
+.btn.sort-selector-button {
+	overflow: visible;
+}
+
 /* button groups: round the outer edges, keep the seam flat */
 .btn-group > .btn,
 .btn-group > .btn:hover,
